@@ -1,0 +1,6 @@
+git/out/
+.idea
+*.iml
+*/target
+.idea/*
+target
