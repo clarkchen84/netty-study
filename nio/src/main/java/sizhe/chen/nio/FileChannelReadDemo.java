@@ -14,7 +14,7 @@ import java.nio.channels.FileChannel;
  * @Version:
  */
 
-public class FileChannelDemo {
+public class FileChannelReadDemo {
 
     public static void main(String[] args) throws IOException {
         // 创建FileChannel
@@ -37,10 +37,5 @@ public class FileChannelDemo {
 
         file.close();
         System.out.println("结束了");
-
-
-
-
-
     }
 }

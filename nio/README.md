@@ -35,7 +35,7 @@
 * FileChannel 
     * 基本API
         * ![](img/FileChannel.png)
-    * FileChannelDemo
+    * FileChannelReadDemo & FileChannelWriteDemo
         1. 创建FileChannel
            * 打开FileChannel
            * 在使用FileChannel之前，必须先打开它，但是，我们无法直接打开一个
@@ -49,6 +49,195 @@
 如果返回-1, 表示读到了文件的末尾。
     
         3. 读取数据到Buffer
+        ``` java 
+        // 创建FileChannel
+        RandomAccessFile file = new RandomAccessFile("nio-demo-dir/01.txt","rw");
+        FileChannel inChannel= file.getChannel();
+        // 创建Buffer
+        ByteBuffer byteBuffer = ByteBuffer.allocate(128);
+        // 读取buffer
+        int bytesRead = inChannel.read(byteBuffer);
+        while(bytesRead != -1){
+            System.out.println("读取了：" + bytesRead);
+            byteBuffer.flip();
+            while(byteBuffer.hasRemaining()){
+                System.out.println((char) byteBuffer.get());
+
+            }
+            byteBuffer.clear();
+            bytesRead = inChannel.read(byteBuffer);
+        }
+
+        file.close();
+        System.out.println("结束了");// 创建FileChannel
+        RandomAccessFile file = new RandomAccessFile("nio-demo-dir/01.txt","rw");
+        FileChannel inChannel= file.getChannel();
+        // 创建Buffer
+        ByteBuffer byteBuffer = ByteBuffer.allocate(128);
+        // 读取buffer
+        int bytesRead = inChannel.read(byteBuffer);
+        while(bytesRead != -1){
+            System.out.println("读取了：" + bytesRead);
+            byteBuffer.flip();
+            while(byteBuffer.hasRemaining()){
+                System.out.println((char) byteBuffer.get());
+
+            }
+            byteBuffer.clear();
+            bytesRead = inChannel.read(byteBuffer);
+        }
+
+        file.close();
+        System.out.println("结束了");
+        ```
+        4. 向FileChannel中写数据
+        ``` java 
+        RandomAccessFile accessFile = new RandomAccessFile("nio-demo-dir/01.txt","rw");
+        FileChannel fileChannel = accessFile.getChannel();
+        String data = "New String to write to file...." + System.currentTimeMillis();
+
+        ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
+        byte[] bytes = data.getBytes(StandardCharsets.UTF_8);
+        byteBuffer.put(bytes);
+        byteBuffer.flip();
+        while (byteBuffer.hasRemaining()){
+            fileChannel.write(byteBuffer);
+        }
+
+        fileChannel.close();
+      
+        ```
+        5. 使用FileChannel 必须调用`close` 方法
+        6. FileChannel的position方法
+            * 有时可能需要在FileChannel的某个特定位置进行数据的读写操作，可以通过`position`方法获取FileChannel的当前位置。也可以通过调用position(long pos)
+方法设置FileChannel的当前位置。
+            ``` Java
+                long pos = channel.position();
+                channel.position(pos + 123);
+            ```
+            * 如果将位置设置在文件的结束位置之后，然后试图读取通道中的数据，读方法将返回-1 （文件结束标志）
+            * 如果将位置设置到文件结束位置之后，然后试图向通道中写数据，文件将撑大到当前位置并写入数据，可能导致文件空洞，磁盘物理文件写入的数据间 有空隙。 
+        7. FileChannel的size() 方法
+            * FileChannel实例的size()方法将返回该实例所关联的文件的大小。如：
+            ``` Java
+            long fileSize = channel.size();
+            ``` 
+        8. FileChannel 的truncate方法
+            * 可以截取一个文件，文件将指长度后面的部分删除`fileChannel.truncate(1024);
+        9. FileChannel的force方法
+            * 将通道里尚未写到磁盘的数据强制写到磁盘上。处于性能考虑，操作系统会将数据缓存在内存中，所以无法保证写入到FileChannel里面的数据
+  一定会写入到磁盘尚，要保证这一点需要调用force方法。（ flush？）
+            * force方法有一个boolean类型的参数，是否要将文件的元信息写到硬盘上（权限信息）
+        10. FileChannel的transferFrom和transferTo方法
+            *  通道之间的数据传输
+                * 如果两个通道之间有一个FileChannel，那可以将数据从一个channel 传到另一个channel
+                * transferFrom 可以将数据源通道传输到FileChannel中
+                ``` java 
+                  RandomAccessFile file = new RandomAccessFile("netty-study/nio-demo-dir/01.txt", "rw");
+                  FileChannel from = file.getChannel();
+                  file = new RandomAccessFile("netty-study/nio-demo-dir/02.txt", "rw");
+                  FileChannel to = file.getChannel();
+            
+                  long position = 0;
+                  long count = from.position();
+            
+                  to.transferFrom(from,position,count);
+                  to.close();
+                  from.close();
+                  System.out.println("over");
+                ```
+                * transferTo 讲述句传输到其他的FileChannel中 
+                ``` java 
+                  RandomAccessFile file = new RandomAccessFile("nio-demo-dir/01.txt", "rw");
+                  FileChannel from = file.getChannel();
+                  file = new RandomAccessFile("nio-demo-dir/03.txt", "rw");
+                  FileChannel to = file.getChannel();
+            
+                  long position = 0;
+                  long count = from.size();
+                  System.out.println("size:" + count + " position:" + from.position());
+                  from.transferTo( position,count,to);
+                  to.close();
+                  from.close();
+                  System.out.println("over");
+                ```
+* Socket通道
+    * Socket通道 可以运行非阻塞模式并且是可选择的， 可以激活大程序（如网络服务器和中间组件）巨大的伸缩性和灵活性，可以不用
+为每个socket连接使用一个线程的必要了， 也避免了管理大连线程所需要的上下文交换开销。记住新的NIO类，一个或几个线程可以管理成百
+上千个获得的Socket连接了，并且只有很少的甚至可能没有性能损失。所有的Socket通道类（DatagramChannel，SocketChannel，
+和ServerSocketChannel）都继承了位于java.nio.channels.spi包中的AbstractSelectableChannel。这意味着我们可以用一个
+Selector对象来执行socket通道的就绪选择（readiness selection）。
+    * DatagramChannel和SocketChannel实现定义读和写功能的接口而ServerSocketChannel不实现。ServerSocketChannel负责监听传入的
+连接和创建新的SocketChannel对象，本身从不传输数据。
+    * socket与Socket通道之间的关系： 
+        1. 通道是连接IO服务的导管并与该服务交互的方法 
+        2.` socket： 他不会再次实现与之对应的Socket通道类的Socket协议api。`而`java.net中已经存在的socket通道能够被大多数协议操作重复使用`
+        3. 全部socket通道类，在被实例化时，都会创建一个对等的Socket对象。可以通过socket（）方法获取
+        4. Socket类，ServerSocket类，DataagramSocket类可通过getChannel方法获得通道
+    * Socket通道可以被设置为非阻塞模式，要依赖所有socke通道类的父类SelectableChannel的configureBlocking
+        * 非阻塞模式通常被认为是服务端使用的，它可以是同时管理多个socket通道变得容易，但是客户端也可以使用非阻塞模式的socket通道。例如借助非阻塞sokeet通道
+GUI程序可以请求并且同时维护一个或多个服务器上的会话，在很多成续上，非阻塞模式都是非常有用的。
+        * 偶尔，也需要防止socket通道的阻塞模式被更改，Api有一个blockLock方法，该方法会返回一个透明的对象引用，返回的对象是修改通道的阻塞模式内部使用的，只有用于这个对象锁的线程才能修改通道的阻塞模式。
+* ServerSocketChannel
+    * SeverSocketChannel是一个基于通道的socket监听器，与ServerSocket执行相同的任务，它增加了通道的语义，并且能够在非阻塞的模式下运行。
+    * ServerSocketChannel 没有bind方法，因此有必要取出对等的socket，并使用它来绑定一个端口已开始监听连接。所以也是使用对等的ServerSocketApi来根据他的需要
+设置它的socket选项。
+    * 与ServerSocket一样，ServerSocketChannel也有accept()方法，一旦创建了一个ServerSocketChannel，并用对等的socket绑定了它，就可以在其中一个上调用accept（），
+如果在ServerSocket上调用accept方法，那么他同其他的ServerSocket表现的行为是一样的，总是阻塞并返回一个  Socket对象。***如果选择在一个ServerSocketChannel上
+调用accept方法，会返回一个SocketChannel类型的对象，返回的对象能够在非阻塞的模式下运行。***
+    * ServerSocketChannel以非阻塞的方式进行调用的情况下，没有传入连接在等待的情况下，调用一个accept方法
+会立刻返回一个null，正是这种检查连接而不是阻塞的能力实现可了可伸缩性，并降低了复杂性。可选择行也得到了实现。
+    * ``` java
+      //端口号设置
+        int port = 8888;
+        //buffer
+        ByteBuffer buffer = ByteBuffer.wrap("Hello World".getBytes(StandardCharsets.UTF_8));
+        //ServerSocketChannel
+        ServerSocketChannel  serverSocketChannel = ServerSocketChannel.open();
+        serverSocketChannel.socket().bind(new InetSocketAddress(port ));
+        //设置非阻塞模式
+        serverSocketChannel.configureBlocking(false);
+        // 无限循环，监听是不是有新的连接传入
+        while(true){
+            SocketChannel socketChannel = serverSocketChannel.accept();
+
+            if(socketChannel == null){
+                System.out.println("have no socket connect to ser ver");
+                Thread.sleep(2000);
+            }else {
+                System.out.println("Incommint from :" + socketChannel.socket().getRemoteSocketAddress() );
+                buffer.rewind(); // 指针指向了0
+                socketChannel.write( buffer);
+                socketChannel.close();
+            }
+        }
+      ```
+* SocketChannel 
+    * 一个连接到TCP网络套接字的通道
+    * SocketChannel是一种面向流连接的sockets套接字的可选择通道
+    * 用途：
+        1. 用来连接socket的套接字
+        2. 用来处理网络I/O的通道
+        3. 基于TCP的连接传输
+        4. 实现了可选择通道，可以被多路复用
+    * SocketChannel的特征
+        1. 对于已经存在的socket 不能创建SocketChannel
+        2. SocketChannel的open方法创建的Channel并没有进行网络级联，要是用Connect接口连接到指定地址。
+        3. 为进行连接的SocketChannel接口执行I/O操作的时候会抛出  `NotYetConnectedException`
+        4. SocketChannel支持两种I/O模式,阻塞模式和非阻塞模式
+        5. SocketChannel支持异步关闭，如果SocketChannel在一个线程上read阻塞，另外一个线程调用`shutDownInput`,
+则阻塞线程将返回-1，表示没有读取任何数据。如果SocketChannel在一个线程上Write阻塞，另外一个线程调用`shutDownWrite`,
+则阻写塞线程将抛出`AsynchronousCloseExcepiotn`
+        6.  SocketChannel 支持设定参数
+            1. SO_SNDBUF 套接字发送缓冲区大小。
+            2. SO_RCVBUF 套接字接收缓冲区大小
+            3. SO_KEEPALIVE 保活连接
+            4. O_REUSEADDR  复用地址
+            5. SO_LINGER 有数据传输时延缓关闭Channel，只有子啊非阻塞模式下有用。
+            6. TCP_NODELAY 禁止使用Nagle算法
+    
+
+
 
          
 
