@@ -300,8 +300,23 @@ GUI程序可以请求并且同时维护一个或多个服务器上的会话，�
     * 连接： UDP不存在真正意义上的连接，这里的连接是只向特定的服务地址用Read或者Write接收发送数据包
 
 * scatter(分散)/Gather（聚集）
-    * scatter： 从channel中读取是指在读取操作时，将读取的数据放到多个buffer中，Channel将从Channel中读取数据分散到多个buffer中
+    * scatter： 从channel中读取是指在读取操作时，将读取的数据放到多个buffer中，Channel将从Channel中读取数据分散到多 个buffer中
     * Gather是指： 写操作时，将多个Buffer中的数据写到同一个channel中，因此channel将多个Buffer中的数据聚集后发送到channel。
-  
+#### Buffer
+* Buffer 的作用： Buffer用于和Channel进行交互，数据是从通道读入到缓冲区，从缓冲区写入到通道中。
+* Buffer的本质： 可以写入数据，并从中读取数据的一块而内存。 这块儿内存包装成Nio的buffer对象，并提供了一组方法，用来方便的访问内存。
+缓冲区实际上是一个容器对象。更直接的说就是一个数组，在NIO的库中，所有的数据都是缓冲区的处理。在读取数据时，直接将数据读取到缓冲区中，
+而写入数据也是写入到缓冲区中的。任何访问NIO的数据都是将它放到缓冲区中，而在面向IO的系统中，所有数据都是直接写入到或者读取的stream中。 
+* 在NIO中，所有的缓冲区类都是继承自Buffer，最长用的就是ByteBuffer，对于java 中的基本类型，基本都有一个具体的buffer类型与之对应，
+* Buffer的基本用法
+    1. 使用Buffer 读写数据一般下面四个步骤
+        1. 写入数据到buffer
+        2. 调用flip()方法
+        3. 从buffer 中读取数据
+        4. 调用Clear方法或者compact方法
+    2. 当向buffer 写入数据的时候，buffer会记录写了多少数据，一旦要读取数据，需要通过flip()方法将buffer从写模式切换到读模式，在读模式下，可以
+读取之前写入到buffer中的内容，一旦读完数据，就清空缓冲区，调用clear后者compact方法，clear方法会清空整个缓冲区。compact 方法会清空已经读的数据。
+任何未读的数据都会移到缓冲区的起始处，新写入的数据将放到缓冲区未读数据的后面。 
+
 
 
