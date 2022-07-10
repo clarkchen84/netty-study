@@ -235,9 +235,69 @@ GUI程序可以请求并且同时维护一个或多个服务器上的会话，�
             4. O_REUSEADDR  复用地址
             5. SO_LINGER 有数据传输时延缓关闭Channel，只有子啊非阻塞模式下有用。
             6. TCP_NODELAY 禁止使用Nagle算法
-    
+    * 创建SocketChannel的两种方式
+        1. ``` java
+           //方式
+           SocketChannel sc = SocketChanel.Open(new InetSocketAddress("www.baidu.com",80));
+           ```
 
+        2. ``` java
+           //方式
+           SocketChannel sc = SocketChanel.Open();
+           sc.connect(new InetSocketAddress("www.baidu.com",80));
+           ```
+    * 连接校验
+        1. SocketChannel.isOpen() 测试SocketChannel是否是Open状态
+        2. SocketChannel.isConnected()  测试SocketChannel是否是连接状态
+        3. SocketChannel.isConnectionPending() 测试SocketChannel是否正在进行连接
+        4. SocketChannel.finishConnect() 校验正在进行套接字连接的SocketChannel是否已经完成了连接
+    * 读写模式(阻塞还是非阻塞)
+        1.  SocketChannel.configureBlocking(false); 
+    * 读写
+        1. ``` java
+            SocketChannel sc = SocketChannel.open(new InetAddress("www.baidu.com",80));
+            ByteBufer bf = ByteBuffer.allocate(128);
+            sc.read(bf);
+            sc.close();
+            System.out.println("over")
 
+           ```
+* DatagramChannel
+    * DatagramChannel 也有一个DatagramSocket，模拟包导向的（UDP/IP），DatagramChannel是无连接的，每个数据报都是一个自包含的实体，
+拥有它自己的目的地址以及不依赖数据报的数据负载，与socket不同，Datagram可以发送单独的数据报给不同的数据地址，同样也可以接收来自任意地址的数据报。
+    * 客户端
+        ``` Java
+        DatagramChannel client = DatagramChannel.open();
+        InetSocketAddress address = new InetSocketAddress("localhost",10086);
+        while (true) {
+            // 发送数据
+            ByteBuffer sendBuffer = ByteBuffer.wrap("发包".getBytes(StandardCharsets.UTF_8));
+            client.send(sendBuffer, address);
+
+            System.out.println("客户端发包");
+            Thread.sleep(2000);
+        }
+        ```
+    *  服务器端
+        ``` java
+        // 打开DatagramChannel
+        DatagramChannel server = DatagramChannel.open();
+        server.bind(new InetSocketAddress(10086));
+        // 通过Receive 接收UDP的包
+        ByteBuffer receiveBuffer = ByteBuffer.allocate(1024);
+        while (true) {
+            receiveBuffer.clear();
+            SocketAddress address = server.receive(receiveBuffer);
+            receiveBuffer.flip();
+            if(address != null) {
+                System.out.println(address.toString() );
+                receiveBuffer.flip();
+                System.out.println(Charset.forName("UTF-8").decode(receiveBuffer));
+            }
+        }
+       
+        ```
+    * 连接： UDP不存在真正意义上的连接，这里的连接是只向特定的服务地址用Read或者Write接收发送数据包
 
          
 
