@@ -299,6 +299,9 @@ GUI程序可以请求并且同时维护一个或多个服务器上的会话，�
         ```
     * 连接： UDP不存在真正意义上的连接，这里的连接是只向特定的服务地址用Read或者Write接收发送数据包
 
-         
+* scatter(分散)/Gather（聚集）
+    * scatter： 从channel中读取是指在读取操作时，将读取的数据放到多个buffer中，Channel将从Channel中读取数据分散到多个buffer中
+    * Gather是指： 写操作时，将多个Buffer中的数据写到同一个channel中，因此channel将多个Buffer中的数据聚集后发送到channel。
+      
 
 
