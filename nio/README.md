@@ -302,6 +302,6 @@ GUI程序可以请求并且同时维护一个或多个服务器上的会话，�
 * scatter(分散)/Gather（聚集）
     * scatter： 从channel中读取是指在读取操作时，将读取的数据放到多个buffer中，Channel将从Channel中读取数据分散到多个buffer中
     * Gather是指： 写操作时，将多个Buffer中的数据写到同一个channel中，因此channel将多个Buffer中的数据聚集后发送到channel。
-      
+  
 
 

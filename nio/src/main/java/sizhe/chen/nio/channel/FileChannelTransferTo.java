@@ -1,4 +1,4 @@
-package sizhe.chen.nio;
+package sizhe.chen.nio.channel;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;

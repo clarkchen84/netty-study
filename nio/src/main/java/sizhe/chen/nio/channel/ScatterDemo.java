@@ -1,4 +1,4 @@
-package sizhe.chen.nio;
+package sizhe.chen.nio.channel;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
