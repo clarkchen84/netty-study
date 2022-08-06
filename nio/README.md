@@ -318,9 +318,14 @@ GUI程序可以请求并且同时维护一个或多个服务器上的会话，�
 读取之前写入到buffer中的内容，一旦读完数据，就清空缓冲区，调用clear后者compact方法，clear方法会清空整个缓冲区。compact 方法会清空已经读的数据。
 任何未读的数据都会移到缓冲区的起始处，新写入的数据将放到缓冲区未读数据的后面。 
 * Buffer 的 工作原理
-- Capacity
-- Position
-- limit 
+    - Capacity
+      * 作为一个内存块儿，Buffer有一个固定大小的值，它就是capacity，可以向里面写capacity个long，byte，char等类型，一旦Buffer 满了，需要将其清空，通过读数据或者清空数据，
+才能继续往里面写数据 
+    - Position
+        * 写数据到Buffer中，position表示写入数据的当前位置，position的初始位置为0，当一个byte，long的数据写入到buffer中之后，position会向下移动到下一个可插入的buffer单元，
+  position最大可为capacity-1
+        * 从buffer中读数据，position表示读取数据的当前位置，如position为2是，表示已经读取了两个byte的数据，或者从第三个byte开始读取。
+    - limit 
 
 
 
