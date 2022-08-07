@@ -324,8 +324,41 @@ GUI程序可以请求并且同时维护一个或多个服务器上的会话，�
     - Position
         * 写数据到Buffer中，position表示写入数据的当前位置，position的初始位置为0，当一个byte，long的数据写入到buffer中之后，position会向下移动到下一个可插入的buffer单元，
   position最大可为capacity-1
-        * 从buffer中读数据，position表示读取数据的当前位置，如position为2是，表示已经读取了两个byte的数据，或者从第三个byte开始读取。
-    - limit 
+        * 从buffer中读数据，position表示读取数据的当前位置，如position为2是，表示已经读取了两个byte的数据，或者从第三个byte开始读取。通过buffer.flip()方法切换到读模式的时候，
+position会被切换为0，当buffer从position读入数据后，position会下移到下一个可读入的数据buffer单元。
+    - limit
+        * 写数据时，limit表示buffer 最多可以写入多少个数据，写模式limit等于buffer的capacity
+        * 读数据是，limit表示buffer里面有多少可读数据，因此能读到之前写入的数据，，limit被设置为写入数据的数量，这个值在写模式下就是position
+* buffer的分配
+    * ByteBuffer.allocate() 
+* 向buffer 中写数据
+    1. 从Channel写数据到buffer，调用channel的read方法
+    2. 通过buffer 的put 方法写到buffer里
+* 从buffer 中读取数据
+    1. 从channel读数据到buffer中，调用channel的write方法
+    2. 通过buffer的get方法从buffer中读取数据 
+* buffer的几个方法
+    * rewind()方法
+        * buffer.rewind()方法，将position设回0，所以可以重新读取buffer中的所有数据，limit保持不变，仍然表示能从buffer中读取多少数据。
+    * clear()方法
+        * 将buffer 中的内容清空，position被设置为0， limit被设置为capacity
+    * compact()方法
+        * 将所有未读数据copy到buffer的起始处。让后将postion设置到最后一个未读元素的后面，limit属性依然向clear方法一样，limit被设置为capacity
+    * mark() & reset()方法
+        * 通过调用Buffer.mark方法可以标记buffer中的一个特定的positoin，之后可以调用buffer.reset方法恢复到position。
+* 缓冲区操作
+    * 缓冲区分片
+        1. 除了分配allocate,包装 wrap 一个缓冲区对象之外，还可一个根据现有缓冲区对象来创建一个子缓冲区，既从现有缓冲区上切出一片作为新缓冲区，
+但子缓冲区和现有缓冲区之间数据共享，子缓冲区相当与现有缓冲区的一个视图窗口，调用slice方法可以创建子缓冲区，参考`BufferSliceDemo`
+    * 只读缓冲区
+        1. 可以读取，但是不能向他们写入数据，可以通过调用缓冲区的asReadOnlyBuffer()方法，将任何普通缓冲区置换为只读缓冲区，这个方法返回一个和原来一样的缓冲区，
+并且和原来的缓冲区共享数据，只是他是只读的。原缓冲区发生变换，只读缓冲区也会跟着发生变化。
+    * 直接缓冲区
+        1. 为了提高IO速度，使用特殊的方法为其分配内存的缓冲区：给定一个字节缓冲区，Java虚拟机将尽最大的努力，直接对他进行IO操作，也就是说，他会在每一次调用操作系统的
+本机IO操作之前，避免将缓冲区的内容copy到一个中间缓冲区，或者从中间缓冲区copy数据，要分配直接缓冲区，需要调用allocateDirect()方法，而不是allocate方法，使用方法是与普通缓冲区没有区别。
+    * 内存映射文件IO
+        * 是一种读和写文件数据的方法，他可以比常规的基于流的和基于通道的IO快的多，内存映射文件IO是通过使文件的数据出现为内存数组的内容来完成的。一般来说只有被读取和写入内存的部分才会映射到内存
+   
 
 
 
