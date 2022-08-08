@@ -1,4 +1,4 @@
-package sizhe.chen.nio.channel;
+package sizhe.chen.nio.buffer;
 
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
@@ -30,6 +30,7 @@ public class BufferSliceDemo {
         ByteBuffer slice = byteBuffer.slice();
         System.out.println("postion= " + byteBuffer.position());
         System.out.println("limit= " + byteBuffer.limit());
+
         // 改变自缓冲区的内容
         for(int i = 0 ; i < slice.capacity(); i++ ){
             slice.put(i   ,(byte) i);
@@ -43,6 +44,9 @@ public class BufferSliceDemo {
 //            System.out.println(byteBuffer.get(i));
 //        }
         byteBuffer.flip();
+//        byteBuffer.limit(10);
+        System.out.println("postion= " + byteBuffer.position());
+        System.out.println("limit= " + byteBuffer.limit());
         while (byteBuffer.hasRemaining()){
             System.out.println(byteBuffer.get());
         }
