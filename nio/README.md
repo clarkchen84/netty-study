@@ -360,7 +360,16 @@ position会被切换为0，当buffer从position读入数据后，position会下�
     * 内存映射文件IO
         * 是一种读和写文件数据的方法，他可以比常规的基于流的和基于通道的IO快的多，内存映射文件IO是通过使文件的数据出现为内存数组的内容来完成的。一般来说只有被读取和写入内存的部分才会映射到内存
 参考`BufferMermorryDemo`
-
+#### Selector 选择器
+1. Selector 和 Channel 的关系
+   * Selector 也叫多路复用器，是Nio的核心组件之一，用于检查一个或多个Channel是否处于可读可写状态，如此可以实现单线程管理多个Channels，也可以管理多个网络连接。
+使用Selector 可以使用更少的线程来处理通道，相比使用多个线程，避免了线程上下文带来的开销。
+2. SelectableChanel 可选择通道
+   1. 并不是所有的channel都可以本Selector复用， 比方说FileChannel，判断一个channel是否可以本Selector复用，有一个前提，判断他是否继承了`SelectaChannel`,
+继承了SelectableChannel的可以本Selector复用。
+   2. SelectableChannel实现通的可选择性所需要的公共方法，他是所有支持就绪检查的通道类的父类
+   3. 一个通道可以被注册到多个选择器上，对每个选择其而言，只能被注册一次，通道和选择器之间使用注册的方式完成。SelectableChannel可以被注册到Selector上。在注册的时候需要指定通道的哪些操作。
+是Selector 感兴趣的。
 
 
 
