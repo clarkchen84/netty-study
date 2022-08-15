@@ -5,6 +5,8 @@ import java.net.InetSocketAddress;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * 创建Selector{@link Selector}
@@ -29,6 +31,25 @@ public class SelectorCreateDemo {
         //将通道注册到选择器上
         serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
 
-        while (selector.)
+        //查询已经就绪的通道操作
+        Set<SelectionKey> keys =  selector.selectedKeys();
+        Iterator<SelectionKey> iterator = keys.iterator();
+        while (iterator.hasNext()){
+            SelectionKey key = iterator.next();
+
+            // 判断key处于就绪状态
+            if(key.isAcceptable()){
+
+            }else if (key.isConnectable()){
+
+            }else if(key.isReadable()){
+
+            }else if(key.isWritable()){
+
+            }else {
+
+            }
+            iterator.remove();
+        }
     }
 }

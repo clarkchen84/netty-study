@@ -404,4 +404,8 @@ position会被切换为0，当buffer从position读入数据后，position会下�
         2. select(long timeout) 阻塞timeout秒
         3. selectNow():非阻塞，只要有通道就绪就返回
     3. select方法返回int值，表示有多少通道已经就绪，更准去的说， 是自前一次select方法之后 ，有多少个操作就绪
-    4. 首次调用select方法
+4. 停止选择的方法
+    * 选择器在选择的过程中， 系统的底层会一次询问每个通道是否已经就绪，这个过程可能会造成调用线程进入阻塞状态，那么有下面三种方式能够唤醒在select()方法中阻塞的线程
+        1. wakeup方法，调用Selector的 wakeup方法，让处于阻塞状态的select方法立即返回，该方法是的选择器上第一个还没有返回的选择操作立即返回，如果当前没有进行中的操作，
+那么下一次对select（）方法的一次调用会立即返回。
+        2.  close()方法，关闭selector，该方法使任何一个选择操作中的阻塞线程都被唤醒，同时是的注册到该selector的所有channel都被注销，所有键将被取消，但channel本身不会关闭
