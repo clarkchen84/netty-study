@@ -370,6 +370,38 @@ position会被切换为0，当buffer从position读入数据后，position会下�
    2. SelectableChannel实现通的可选择性所需要的公共方法，他是所有支持就绪检查的通道类的父类
    3. 一个通道可以被注册到多个选择器上，对每个选择其而言，只能被注册一次，通道和选择器之间使用注册的方式完成。SelectableChannel可以被注册到Selector上。在注册的时候需要指定通道的哪些操作。
 是Selector 感兴趣的。
+3. Channel 注册到Selector上
+    1. 使用`channel.regist(Selector sel , int option)`,将一个通道注册到Selector上时，第一个参数，指定指定通道要注册的选择器，第二个参数，选择器所要注册的通道操作。
+    2. 可以供通道的选择器操作：
+        * 可读：  SelectKey.OP_READ  
+        * 可写：  SelectKey.OP_WRITE  
+        * 连接：  SelectKey.OP_CONNECT  
+        * 接收：  SelectKey.OP_ACCEPT
+    3. 如果通道对多个操作感性区，可以使用位操作 例如SelectKey.OP_WRITE  |  SelectKey.OP_READ  
+    4. 选择器查询的不是通道的操作， 而是通道某个操作的就绪状态，一旦通道具备具备某个操作的条件，就表示某个操作已经进入了就绪的状态。可以被Selector查询到，通道可以对对应的通道进行对应的操作，
+比方说某个SocketChannel可以连接到一个服务器，则处于连接就绪OP_CONNECT,ServerSocketChannel 处于接收连接就绪的状态OP_ACCEPT.
+4. 选择键SelectionKey
+    1. channel注册后，并且一旦处于某种就绪状态，就可以被选择器查询到。
+    2.  这个操作可一个别Selector的select方法取得
+    3. Selector 可以不断的查询Channel中的就绪状态，并挑选感兴趣的就绪状态，一旦操作有感兴趣的操作状态达成， 就会被Selector选中放入选择键集合中。
+    4. 一个选择键，首先包含了注册在selector通道上的操作类型，比方说SelectionKey.OP_READ,也包含了特定通道与特定的选择器之间的注册关系。开发应用程序时
+选择键是编程的关键，NIO编程根据不同的选择键，进行不同的业务处理。
+#### Selector 的使用方法    参考`SelectorCreateDemo`
+1. Selector的创建
+       ```java
+        Selector selector = Selector.Open();
+       ```
+2. 注册Channel到Selector上
+    1.  与Selector一起使用是，Channel必须处于非阻塞的状态下，否则会抛出`IllegalBlockingModeException`,这意味FileChannel不能与Selector一起使用，
+因为FilChannel不能设置非阻塞模式，而套接字相关的通道都可以。
+    2. 一个通道，并没有一定要支持所有的四种操作。比如ServerSocketChannel支持OPT_ACCEPT但是ServerSocket就不支持。 可以通过通道上的`validOps`查看
+通道上支持的所有的操作的集合。
 
-
-
+3. 轮询操作 
+    1. 通过Selector 的select方法查询已经就绪的通道操作，这些就绪的状态集合，保存在SelectKey的一个Set集合上
+    2. Select方法的几个重载方法
+        1. select()阻塞到至少有一个通道在你注册的通道上就绪了
+        2. select(long timeout) 阻塞timeout秒
+        3. selectNow():非阻塞，只要有通道就绪就返回
+    3. select方法返回int值，表示有多少通道已经就绪，更准去的说， 是自前一次select方法之后 ，有多少个操作就绪
+    4. 首次调用select方法
