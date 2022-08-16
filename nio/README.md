@@ -386,7 +386,7 @@ position会被切换为0，当buffer从position读入数据后，position会下�
     3. Selector 可以不断的查询Channel中的就绪状态，并挑选感兴趣的就绪状态，一旦操作有感兴趣的操作状态达成， 就会被Selector选中放入选择键集合中。
     4. 一个选择键，首先包含了注册在selector通道上的操作类型，比方说SelectionKey.OP_READ,也包含了特定通道与特定的选择器之间的注册关系。开发应用程序时
 选择键是编程的关键，NIO编程根据不同的选择键，进行不同的业务处理。
-#### Selector 的使用方法    参考`SelectorCreateDemo`
+#### Selector 的使用方法    参考`SelectorServerDemo``SelectorClientDemo`
 1. Selector的创建
        ```java
         Selector selector = Selector.Open();
@@ -408,4 +408,5 @@ position会被切换为0，当buffer从position读入数据后，position会下�
     * 选择器在选择的过程中， 系统的底层会一次询问每个通道是否已经就绪，这个过程可能会造成调用线程进入阻塞状态，那么有下面三种方式能够唤醒在select()方法中阻塞的线程
         1. wakeup方法，调用Selector的 wakeup方法，让处于阻塞状态的select方法立即返回，该方法是的选择器上第一个还没有返回的选择操作立即返回，如果当前没有进行中的操作，
 那么下一次对select（）方法的一次调用会立即返回。
-        2.  close()方法，关闭selector，该方法使任何一个选择操作中的阻塞线程都被唤醒，同时是的注册到该selector的所有channel都被注销，所有键将被取消，但channel本身不会关闭
+        2. close()方法，关闭selector，该方法使任何一个选择操作中的阻塞线程都被唤醒，同时是的注册到该selector的所有channel都被注销，所有键将被取消，但channel本身不会关闭
+        3. 
