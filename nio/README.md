@@ -409,4 +409,14 @@ position会被切换为0，当buffer从position读入数据后，position会下�
         1. wakeup方法，调用Selector的 wakeup方法，让处于阻塞状态的select方法立即返回，该方法是的选择器上第一个还没有返回的选择操作立即返回，如果当前没有进行中的操作，
 那么下一次对select（）方法的一次调用会立即返回。
         2. close()方法，关闭selector，该方法使任何一个选择操作中的阻塞线程都被唤醒，同时是的注册到该selector的所有channel都被注销，所有键将被取消，但channel本身不会关闭
-        3. 
+#### pipe 管道 `参考 PipeDemo`
+1. pipe 是两个线程之间单向的数据连接，Pipe有一个source通道和一个sink通道，数据都会写到sink通道，从source通道读取
+   ![管道处理示意图](img/pipe.png)
+2. 创建通道
+    1. `Pipe pipe = Pipe.open()`
+3. 向通道中写入数据
+    1.向通道写数据需要访问sink 通道`Pipe.SinkChannel sink = pipe.sink()`
+    2. 通过SinkChannel的write方法将数据写入到sinkChannel
+4. 从管道读取数据
+    1. `Pipe.SourceChannel source = pipe.source()`
+    2. 调用Source通道的read方法来读取数据 
