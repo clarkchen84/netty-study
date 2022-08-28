@@ -19,7 +19,7 @@ public class FileChannelWriteDemo {
     public static void main(String[] args) throws IOException {
         RandomAccessFile accessFile = new RandomAccessFile("nio-demo-dir/01.txt","rw");
         FileChannel fileChannel = accessFile.getChannel();
-        String data = "New String to write to file...." + System.currentTimeMillis();
+        String data = "New String to write to file你好...." + System.currentTimeMillis();
         fileChannel.position(fileChannel.size());
         ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
         byte[] bytes = data.getBytes(StandardCharsets.UTF_8);
