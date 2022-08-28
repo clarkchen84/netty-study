@@ -465,3 +465,13 @@ Path接口代替File类的使用。
 1. 通过静态方法open创建对象， 第一个参数path，第二个参数  StandardOpenOption， 说明文件是读，是写还append等 
 2. 通过Feature实现 `FeatureDemo`
 3. 通过CompletionHandler实现 `CompletionHandlerDemo`
+#### CharSet    `CharSetEncoderAndDecoderDemo`
+1. 用来表示字符集的编码对象。
+2. 常用静态方法
+    1. forName 通过编码类型获得CharSet对象
+    2. availableCharset 获得系统支持的所有编码对象
+    3. defaultCharset 获得虚拟机默认的charset
+3. 普通方法
+    1. name 获取CharSet对象的编码类型
+    2. newEncoder 获得编码器对象
+    3. newDecoder 获得解码器对象 
