@@ -445,5 +445,20 @@ position会被切换为0，当buffer从position读入数据后，position会下�
 Path接口代替File类的使用。
 2. 创建Path实例， 使用工厂类Paths.get(路径) 来创建路径实例。 
 3. Path.normalize可以是路径标准化，标准化意味着，他将一出路径的所有`.和..` 并解析字符串中所引用的路径。 
-    
+#### Files 
+1. Files类提供了几种操作文件系统中文件的方法，Files类与Path类一起工作
+    1. createDirectory,根据Path创建一个新目录 `CreateDirectoryDemo`
+        1. 如果目录已经存在了会抛出`FileAlreadyExistsExeption`,出现其他错误会抛出IOException
+        2. 如果父目录没有会抛出异常`NoSuchFileException`
+    2. copy(),从一个路径copy到另一个目录 
+    3. move(), 文件的移动或者重命名
+    4. delete(), 删除文件
+    5. workFileTree();
+        1. 递归遍历目录树的功能，将Path实例和FileVisitor作为参数，Path参数指向要遍历的目录，FileVisitor在遍历期间被调用
+        2. FileVisitor是一个接口，必须实现自己的FileVisitor接口。FileVisitor中的每个接口都会被调用，如果不想扩展所有方法，可以实现`SimpleFileVisitor`类
+        3. FileVisitResult ：FileVisitor方法，每个都返回一个FileVisitResult枚举实例。
+            1. CONTINUE： 继续
+            2. TERMINAL： 终止 
+            3. SKIP_SIBLING 跳过同级
+            4. SKIP_SIBTREE 跳过子集
  
