@@ -461,4 +461,7 @@ Path接口代替File类的使用。
             2. TERMINAL： 终止 
             3. SKIP_SIBLING 跳过同级
             4. SKIP_SIBTREE 跳过子集
- 
+ #### AsynChronousFileChannel  异步的将数据写入文件 
+1. 通过静态方法open创建对象， 第一个参数path，第二个参数  StandardOpenOption， 说明文件是读，是写还append等 
+2. 通过Feature实现 `FeatureDemo`
+3. 通过CompletionHandler实现 `CompletionHandlerDemo`
